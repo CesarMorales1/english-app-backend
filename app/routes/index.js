@@ -13,7 +13,6 @@ const removeExtension = (fileNameToFilter) => fileNameToFilter.replace(/\.[^.]+$
 try
 {
     const listOfDirectories = await fs.readdir(join(__dirname,versionToUse));
-
     for(const directory of listOfDirectories)
     {
         if (directory === 'index.js' || !/\.js$/.test(directory)) continue;

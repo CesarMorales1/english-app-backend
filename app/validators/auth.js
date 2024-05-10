@@ -43,11 +43,9 @@ const loginValidation = [
 ]
 
 const validateUserData = [
-  singleValidation('username', 'text'),
-  singleValidation('email', 'email'),
-  singleValidation('avatar', 'text', { optional: true }),
-  singleValidation('password', 'text'),
   singleValidation('full_name', 'text'),
+  singleValidation('email', 'email'),
+  singleValidation('password', 'text'),
   singleValidation('numero', 'number'),
   singleValidation('numero', 'length', { min: 11, max: 11 }),
   (req, res, next) => {

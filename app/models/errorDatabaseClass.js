@@ -11,7 +11,7 @@ const prismaHandledErrors = (errorCode,informacionAdicional) =>
   }else if(errorCode === 'P2025')
   {
     const httpCodeResponse = 404;
-    const respuesta = new ErrorHandler({mensaje: 'No se encontro ningun usuario con este email'});
+    const respuesta = new ErrorHandler({mensaje: 'No se encontro ningun usuario con esta informacion',httpCode: httpCodeResponse});
     return {status: httpCodeResponse,respuesta:respuesta};
   }
 }

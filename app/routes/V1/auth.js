@@ -7,4 +7,5 @@ const authRouter = express.Router();
 authRouter.post('/register',validateUserData,createUser);
 //logueando usuario
 authRouter.post('/login',loginValidation,loginUser);
+
 export default authRouter;

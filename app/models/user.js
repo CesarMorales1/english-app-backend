@@ -177,9 +177,8 @@ function r(name) {
 
 const typeMap = {
     "UserModel": o([
-        { json: "username", js: "username", typ: "" },
         { json: "email", js: "email", typ: "" },
-        { json: "avatar", js: "avatar", typ: "" },
+        { json: "avatar", js: "avatar", typ: u(undefined,"") },
         { json: "full_name", js: "full_name", typ: "" },
         { json: "password", js: "password", typ: "" },
         { json: "numero", js: "numero", typ: "" },

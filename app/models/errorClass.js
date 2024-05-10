@@ -7,6 +7,7 @@ class ErrorHandler extends Error
         this.httpCode = httpCode;
         this.path = path;
         this.location = location;
+        this.success = false;
     }
 
     toJSON() {
