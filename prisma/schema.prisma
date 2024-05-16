@@ -19,7 +19,7 @@ model User {
   id_user    String   @id @default(uuid())
   createdAt  DateTime @default(now())
   email      String   @unique
-  avatar     String   @default("https://reedbarger.nyc3.digitaloceanspaces.com/default-avatar.png")
+  imagen     String   @default("https://reedbarger.nyc3.digitaloceanspaces.com/default-avatar.png")
   full_name  String
   status     String   @db.VarChar(1)
   password   String   
