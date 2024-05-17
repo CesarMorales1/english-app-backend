@@ -1,30 +1,30 @@
-const { Storage } = require('@google-cloud/storage');
-const { format } = require('util');
-const env = require('../config/env')
-const url = require('url');
-const { v4: uuidv4 } = require('uuid');
+import { Storage } from '@google-cloud/storage';
+import { format } from 'util';
+// import env from '../config/env.js';
+import { parse } from 'url';
+import { v4 as uuidv4 } from 'uuid';
 const uuid = uuidv4();
 
 
 const storage = new Storage({
-    projectId: "udemy-delivery-mysql",
+    projectId: "english-plis",
     keyFilename: './serviceAccountKey.json'
 });
 
-const bucket = storage.bucket("gs://udemy-delivery-mysql.appspot.com/");
+const bucket = storage.bucket("gs://english-plis.appspot.com");
 
 /**
  * Subir el archivo a Firebase Storage
  * @param {File} file objeto que sera almacenado en Firebase Storage
  */
-module.exports = (file, pathImage, deletePathImage) => {
+export default (file, pathImage, deletePathImage) => {
     return new Promise((resolve, reject) => {
         
         console.log('delete path', deletePathImage)
         if (deletePathImage) {
 
             if (deletePathImage != null || deletePathImage != undefined) {
-                const parseDeletePathImage = url.parse(deletePathImage)
+                const parseDeletePathImage = parse(deletePathImage)
                 var ulrDelete = parseDeletePathImage.pathname.slice(23);
                 const fileDelete = bucket.file(`${ulrDelete}`)
 

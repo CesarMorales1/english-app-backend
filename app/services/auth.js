@@ -14,12 +14,20 @@ const createUser = async (objectUserData) => {
   try {
     //A I
     objectUserData.status = 'A';
+    //TODO: Crear una clase que tenga los permisos por default de cada una de las personas dentro del sistema
+    objectUserData.id_permisos = 1;
     //creando usuario y generando mensaje de error o exito
-    await prisma.user.create({ data: objectUserData });
-    return { success: true }; 
+    const userCreated = await prisma.user.create({ data: objectUserData });
+    //creando la session una vez registrado el usuario
+    userCreated.session_token = `JWT ${creatingTokenJwt(userCreated.id_user,userCreated.email)}`;
+    return { success: true, data: {...userCreated}}; 
   } catch (error) {
+    if(error instanceof Prisma.PrismaClientValidationError)
+      {
+        return {success: false ,informacionAdicional: error.message, errorCode: "C001"}
+      }
     if(error instanceof Prisma.PrismaClientKnownRequestError)
-    {
+      {
       return {success: false, errorCode: error.code, informacionAdicional: error.meta};
     }
   }

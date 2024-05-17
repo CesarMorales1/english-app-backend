@@ -1,36 +1,132 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
-// prisma.schema
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["multiSchema"]
+}
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  schemas  = ["Educational", "Users", "Videos"]
 }
 
-generator client {
-  provider = "prisma-client-js"
+model course {
+  id_course          Int            @id(map: "id_course_pk") @default(autoincrement())
+  name_course        String            @db.VarChar(20)
+  description_course String            @db.VarChar(30)
+  teachers_course    teachers_course[]
+  user_has_course    user_has_course[]
+  videos             videos[]
+
+  @@schema("Educational")
 }
 
-model User {
-  id_user    String   @id @default(uuid())
-  createdAt  DateTime @default(now())
-  email      String   @unique
-  imagen     String   @default("https://reedbarger.nyc3.digitaloceanspaces.com/default-avatar.png")
-  full_name  String
-  status     String   @db.VarChar(1)
-  password   String   
-  numero     String   @db.Char(11)
+model students {
+  id_student      Int            @id(map: "id_student_pk") @default(autoincrement())
+  id_user         Int
+  user            user              @relation(fields: [id_user], references: [id_user], map: "id_user_fk")
+  user_has_course user_has_course[]
+
+  @@schema("Educational")
 }
 
-//TODO: const classes = [
-//   { id: "01", title: "Welcome to the course", viewed: true, duration: "06:10" },
-//   { id: "02", title: "Verb To-Be English Plis", viewed: true, duration: "06:10" },
-//   { id: "03", title: "Sentences", viewed: true, duration: "06:10" },
-//   { id: "04", title: "Simple present", viewed: false, duration: "06:10" },
-//   { id: "05", title: "Simple past", viewed: false, duration: "06:10" },
-//   { id: "06", title: "Simple future", viewed: false, duration: "06:10" },
-// ]
+model teachers {
+  id_teacher      Int            @id(map: "id_teacher_pk") @default(autoincrement())
+  id_user         Int
+  user            user              @relation(fields: [id_user], references: [id_user], map: "id_user_fk")
+  teachers_course teachers_course[]
+
+  @@schema("Educational")
+}
+
+model teachers_course {
+  id_teacher_course Int   @id(map: "id_teacher_course_pk") @default(autoincrement())
+  id_course         Int
+  id_teacher        Int
+  course            course   @relation(fields: [id_course], references: [id_course], map: "id_course_fk")
+  teachers          teachers @relation(fields: [id_teacher], references: [id_teacher], onDelete: NoAction, onUpdate: NoAction, map: "id_teacher_fk")
+
+  @@schema("Educational")
+}
+
+model user_has_course {
+  id_has_course Int   @id(map: "user_has_course_pk") @default(autoincrement())
+  id_student    Int
+  id_course     Int
+  course        course   @relation(fields: [id_course], references: [id_course], map: "id_course_fl")
+  students      students @relation(fields: [id_student], references: [id_student], map: "id_student_fk")
+
+  @@schema("Educational")
+}
+
+model permisos {
+  Id_permisos Int  @id(map: "id_permisos_pk") @default(autoincrement())
+  name        String? @db.VarChar(50)
+  description String? @db.VarChar(50)
+  user        user[]
+
+  @@schema("Users")
+}
+
+model roles {
+  id_rol         Int           @id(map: "id_roles_pk") @default(autoincrement())
+  name_rol       String           @db.VarChar(40)
+  status         String           @db.Char(1)
+  user_has_roles user_has_roles[]
+
+  @@schema("Users")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model user {
+  id_user        Int              @id(map: "id_user_pk") @default(autoincrement())
+  full_name      String           @db.VarChar(30)
+  email          String           @unique
+  numero         String           @db.VarChar(11)
+  image          String           @default("https://reedbarger.nyc3.digitaloceanspaces.com/default-avatar.png")
+  password       String            
+  id_permisos    Int
+  status         String           @db.Char(1)
+  students       students[]
+  teachers       teachers[]
+  permisos       permisos         @relation(fields: [id_permisos], references: [Id_permisos], map: "id_permisos_fk")
+  user_has_roles user_has_roles[]
+  comments       comments[]
+
+  @@schema("Users")
+}
+
+model user_has_roles {
+  id_has_rol Int @id(map: "user_has_roles_pk") @default(autoincrement())
+  id_user    Int
+  id_rol     Int
+  status     String @db.Char(1)
+  roles      roles  @relation(fields: [id_rol], references: [id_rol], map: "id_rol_fk")
+  user       user   @relation(fields: [id_user], references: [id_user], map: "id_user_fk")
+
+  @@schema("Users")
+}
+
+model comments {
+  id_comment                         Int   @id(map: "id_comment_pk") @default(autoincrement())
+  text                               String   @db.VarChar(300)
+  id_user                            Int
+  id_video                           Int
+  user                               user     @relation(fields: [id_user], references: [id_user], onDelete: NoAction, onUpdate: NoAction, map: "id_user_fk")
+  videos_comments_id_videoTovideos   videos   @relation("comments_id_videoTovideos", fields: [id_video], references: [id_video], onDelete: NoAction, onUpdate: NoAction, map: "id_video")
+  videos_videos_id_commentTocomments videos[] @relation("videos_id_commentTocomments")
+
+  @@schema("Videos")
+}
+
+model videos {
+  id_video                             Int    @id(map: "id_video_pk") @default(autoincrement())
+  titulo                               String     @db.VarChar(30)
+  id_course                            Int
+  url                                  String     @db.VarChar(1000)
+  id_comment                           Int
+  comments_comments_id_videoTovideos   comments[] @relation("comments_id_videoTovideos")
+  comments_videos_id_commentTocomments comments   @relation("videos_id_commentTocomments", fields: [id_comment], references: [id_comment], map: "id_comment_fk")
+  course                               course     @relation(fields: [id_course], references: [id_course], map: "id_course_fk")
+
+  @@schema("Videos")
+}
