@@ -5,7 +5,7 @@ const authRouter = express.Router();
 
 //creando usuario
 authRouter.post('/register',validateUserData,createUser);
-authRouter.post('/registerWithImage',validateUserData,upload.array('image',1),createUserWithImage)
+// authRouter.post('/registerWithImage',validateUserData,upload.array('image',1),createUserWithImage)
 //logueando usuario
 authRouter.post('/login',loginValidation,loginUser);
 
