@@ -10,7 +10,7 @@ datasource db {
 }
 
 model course {
-  id_course          Int            @id(map: "id_course_pk") @default(autoincrement())
+  id_course          Int               @id(map: "id_course_pk") @default(autoincrement())
   name_course        String            @db.VarChar(20)
   description_course String            @db.VarChar(30)
   teachers_course    teachers_course[]
@@ -21,7 +21,7 @@ model course {
 }
 
 model students {
-  id_student      Int            @id(map: "id_student_pk") @default(autoincrement())
+  id_student      Int               @id(map: "id_student_pk") @default(autoincrement())
   id_user         Int
   user            user              @relation(fields: [id_user], references: [id_user], map: "id_user_fk")
   user_has_course user_has_course[]
@@ -30,7 +30,7 @@ model students {
 }
 
 model teachers {
-  id_teacher      Int            @id(map: "id_teacher_pk") @default(autoincrement())
+  id_teacher      Int               @id(map: "id_teacher_pk") @default(autoincrement())
   id_user         Int
   user            user              @relation(fields: [id_user], references: [id_user], map: "id_user_fk")
   teachers_course teachers_course[]
@@ -39,7 +39,7 @@ model teachers {
 }
 
 model teachers_course {
-  id_teacher_course Int   @id(map: "id_teacher_course_pk") @default(autoincrement())
+  id_teacher_course Int      @id(map: "id_teacher_course_pk") @default(autoincrement())
   id_course         Int
   id_teacher        Int
   course            course   @relation(fields: [id_course], references: [id_course], map: "id_course_fk")
@@ -49,7 +49,7 @@ model teachers_course {
 }
 
 model user_has_course {
-  id_has_course Int   @id(map: "user_has_course_pk") @default(autoincrement())
+  id_has_course Int      @id(map: "user_has_course_pk") @default(autoincrement())
   id_student    Int
   id_course     Int
   course        course   @relation(fields: [id_course], references: [id_course], map: "id_course_fl")
@@ -59,7 +59,7 @@ model user_has_course {
 }
 
 model permisos {
-  Id_permisos Int  @id(map: "id_permisos_pk") @default(autoincrement())
+  Id_permisos Int     @id(map: "id_permisos_pk") @default(autoincrement())
   name        String? @db.VarChar(50)
   description String? @db.VarChar(50)
   user        user[]
@@ -68,7 +68,7 @@ model permisos {
 }
 
 model roles {
-  id_rol         Int           @id(map: "id_roles_pk") @default(autoincrement())
+  id_rol         Int              @id(map: "id_roles_pk") @default(autoincrement())
   name_rol       String           @db.VarChar(40)
   status         String           @db.Char(1)
   user_has_roles user_has_roles[]
@@ -76,14 +76,13 @@ model roles {
   @@schema("Users")
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model user {
   id_user        Int              @id(map: "id_user_pk") @default(autoincrement())
   full_name      String           @db.VarChar(30)
   email          String           @unique
   numero         String           @db.VarChar(11)
   image          String           @default("https://reedbarger.nyc3.digitaloceanspaces.com/default-avatar.png")
-  password       String            
+  password       String
   id_permisos    Int
   status         String           @db.Char(1)
   students       students[]
@@ -96,7 +95,7 @@ model user {
 }
 
 model user_has_roles {
-  id_has_rol Int @id(map: "user_has_roles_pk") @default(autoincrement())
+  id_has_rol Int    @id(map: "user_has_roles_pk") @default(autoincrement())
   id_user    Int
   id_rol     Int
   status     String @db.Char(1)
@@ -107,7 +106,7 @@ model user_has_roles {
 }
 
 model comments {
-  id_comment                         Int   @id(map: "id_comment_pk") @default(autoincrement())
+  id_comment                         Int      @id(map: "id_comment_pk") @default(autoincrement())
   text                               String   @db.VarChar(300)
   id_user                            Int
   id_video                           Int
@@ -119,7 +118,7 @@ model comments {
 }
 
 model videos {
-  id_video                             Int    @id(map: "id_video_pk") @default(autoincrement())
+  id_video                             Int        @id(map: "id_video_pk") @default(autoincrement())
   titulo                               String     @db.VarChar(30)
   id_course                            Int
   url                                  String     @db.VarChar(1000)
