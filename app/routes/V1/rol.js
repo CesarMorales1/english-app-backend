@@ -1,9 +1,8 @@
 import express from "express";
-const rolRouter =  express.Router();
+import { getRoles } from "../../controller/rolController.js";
 
-rolRouter.get('/',(req,res,next) => 
-    {
-        console.log('object');
-    })
+const router = express.Router();
 
-export default rolRouter;
+router.get("/", getRoles);
+
+export default router;
