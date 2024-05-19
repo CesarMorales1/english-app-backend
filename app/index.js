@@ -4,13 +4,13 @@ import routesToUse from "../app/routes/index.js";
 import morgan from "morgan";
 import passport from "passport";
 import passportStrategy from "./helpers/handlerJwtPassport.js";
-import multer from "multer";
 const app = express();
 //TODO: como estamos en local buscamos el puerto que se encuentra libre para el despliegue de la aplicacion
-/* const {PORT = 0} = process.env; */
+const {PORT = 0} = process.env;
 
 app.use(morgan("dev"));
 app.use(express.json());
+app.use(express.urlencoded({extended: true}))
 app.use(`/${process.env.ROUTE_VERSION}/`, routesToUse);
 app.use(cors());
 app.use(passport.initialize());
@@ -20,12 +20,6 @@ app.use(express.urlencoded({ extended: true }));
 
 //evitando la filtracion de informacion acerca del servidor web
 app.disable("x-powered-by");
-
-//
-const uploadFiles = multer({
-  storage: multer.memoryStorage(),
-});
-//
 
 app.listen(PORT, function () {
   //buscnado puerto libre

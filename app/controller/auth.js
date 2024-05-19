@@ -24,18 +24,17 @@ const createUser = async (req, res, next) => {
   }
 };
 const createUserWithImage = async (req, res, next) => {
-  try {
-    //obteniendo valores del body difiere por el uso de multer
+  try {    //obteniendo valores del body difiere por el uso de multer
     const user = JSON.parse(req.body.user);
+    // const user = req.body
     //obteniendo los files que van dentro del body esto gracias a multer
-    const files = req.files;
-
-    if(files.length > 0)
+    const files = req.file;
+    console.log(files);
+    if(files)
       {
         //dado que el nombre corresponde a la fecha de hoy no van a existir dos paths iguales
         const path = `image_${Date.now()}`;
-        const url = await firebaseStorage(files[0],path);
-
+        const url = await firebaseStorage(files,path);
         if(url)
           {
             user.image = url;

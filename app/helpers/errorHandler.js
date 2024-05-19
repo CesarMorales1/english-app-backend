@@ -3,7 +3,6 @@ import { ErrorHandler } from "../models/errorClass.js";
 const errorValidationHandling = (req,res,next) => 
 {
     try {
-        console.log(req.body);
         const listOfErrors = validationResult(req).throw();
     } catch (listOfErrors) {
         const {msg,path,location} = listOfErrors['errors'][0];
