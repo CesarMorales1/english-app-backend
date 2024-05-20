@@ -11,6 +11,7 @@ const createUser = async (objectUserData) => {
   objectUserData.password = passwordHashed;
   //transformando en la clase userModel
   objectUserData = toUserModel(objectUserData);
+  console.log(objectUserData);
   try {
     //A I
     objectUserData.status = 'A';
