@@ -25,7 +25,7 @@ const createUser = async (objectUserData) => {
     userCreated.session_token = `JWT ${creatingTokenJwt(userCreated.id_user,userCreated.email)}`;
     //agregando valores a la tabla user_has_roles
     await userHasRolesInsert(userCreated.id_user,id_rol);
-    return { success: true, data: {...userCreated}}; 
+    return { success: true, data: {...userCreated,id_rol}}; 
   } catch (error) {
     if(error instanceof Prisma.PrismaClientValidationError)
       {
@@ -40,6 +40,7 @@ const createUser = async (objectUserData) => {
 
 const loginUser = async (objectUserData) => 
 {
+  console.log(objectUserData);
   const {email,password} = objectUserData;
   //p2025
   try {
@@ -60,8 +61,9 @@ const loginUser = async (objectUserData) =>
     //guardando informacion para almacenar en el localStorage del usuario
     const userDataToReturn = {...user,
       session_token : `JWT ${token}`,
+      id_rol: await userHasRolesGet(user.id_user)
     };
-
+  
     return {success: true,data: userDataToReturn};
     
   } catch (error) {
@@ -73,11 +75,13 @@ const loginUser = async (objectUserData) =>
   }
 }
 
+
+//TODO: pasar a services de user_has_roles
 const userHasRolesInsert = async (userID,rolID,) => 
   {
     const statusDefaultValue = 'A';
     try {
-        await prisma.user_has_roles.create(
+        const result = await prisma.user_has_roles.create(
         {
           data: 
           {
@@ -86,6 +90,7 @@ const userHasRolesInsert = async (userID,rolID,) =>
             status:  statusDefaultValue,
           }
         })
+        return result;
     } catch (error) {
 
       if(error instanceof Prisma.PrismaClientValidationError)
@@ -99,6 +104,23 @@ const userHasRolesInsert = async (userID,rolID,) =>
       
     }
   }
+
+const userHasRolesGet = (userId)  => 
+  {
+    try {
+      return prisma.user_has_roles.findUniqueOrThrow(
+        {
+          where: {id_user : userId},
+          select: {
+            id_rol: true
+          }
+        })
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+
 
 export {
   createUser,
