@@ -23,8 +23,9 @@ const createUserWithImage = async (req, res, next) => {
   try {
     // const user = req.body
     const user = JSON.parse(req.body.user);
+    //como no recibi un file se hace con base64
     const image = req.body.image;
-    const file = req.file
+    // const file = req.file
     const imageJson = JSON.parse(image);
     const imageBase64 = imageJson.base64;
     // const file = user.image;
@@ -37,7 +38,7 @@ const createUserWithImage = async (req, res, next) => {
     }
     const createUserResult = await authServices.createUser(user);
     if (createUserResult.success) {
-      res.status(201).send({ message: "User created successfully.", success: true });
+      res.status(201).send({ message: "User created successfully.", success: true, data: createUserResult.data });
     } else {
       const errorManagement = prismaHandledErrors(createUserResult.errorCode, createUserResult.informacionAdicional);
       res.status(errorManagement.status).send(errorManagement.respuesta);

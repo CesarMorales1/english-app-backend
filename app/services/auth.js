@@ -5,22 +5,26 @@ import { creatingTokenJwt } from "../helpers/handlerJwt.js";
 const prisma = new PrismaClient();
 
 const createUser = async (objectUserData) => {
+  const {password: passwordToHash,id_rol} = objectUserData;
   delete objectUserData.confirmPassword;
-  const {password: passwordToHash} = objectUserData;
+  delete objectUserData.id_rol;
+  //encriptando password
   const passwordHashed = await encrypt(passwordToHash);
   objectUserData.password = passwordHashed;
   //transformando en la clase userModel
   objectUserData = toUserModel(objectUserData);
-  console.log(objectUserData);
   try {
     //A I
     objectUserData.status = 'A';
     //TODO: Crear una clase que tenga los permisos por default de cada una de las personas dentro del sistema
     objectUserData.id_permisos = 1;
     //creando usuario y generando mensaje de error o exito
+    console.log(objectUserData);
     const userCreated = await prisma.user.create({ data: objectUserData });
     //creando la session una vez registrado el usuario
     userCreated.session_token = `JWT ${creatingTokenJwt(userCreated.id_user,userCreated.email)}`;
+    //agregando valores a la tabla user_has_roles
+    await userHasRolesInsert(userCreated.id_user,id_rol);
     return { success: true, data: {...userCreated}}; 
   } catch (error) {
     if(error instanceof Prisma.PrismaClientValidationError)
@@ -68,6 +72,33 @@ const loginUser = async (objectUserData) =>
     console.log(error);
   }
 }
+
+const userHasRolesInsert = async (userID,rolID,) => 
+  {
+    const statusDefaultValue = 'A';
+    try {
+        await prisma.user_has_roles.create(
+        {
+          data: 
+          {
+            id_user : userID,
+            id_rol  : rolID,
+            status:  statusDefaultValue,
+          }
+        })
+    } catch (error) {
+
+      if(error instanceof Prisma.PrismaClientValidationError)
+        {
+          return {success: false ,informacionAdicional: error.message, errorCode: "C001"}
+        }
+      if(error instanceof Prisma.PrismaClientKnownRequestError)
+        {
+        return {success: false, errorCode: error.code, informacionAdicional: error.meta};
+      }
+      
+    }
+  }
 
 export {
   createUser,
