@@ -1,4 +1,7 @@
 import express from "express";
+import multer from "multer";
+// const upload = multer({dest: 'uploads/'})
+
 import {
   createUser,
   loginUser,
@@ -7,9 +10,16 @@ import {
 import { loginValidation, validateUserData } from "../../validators/auth.js";
 const authRouter = express.Router();
 
+//
+const uploadFiles = multer({
+  storage: multer.memoryStorage(),
+});
+
 //creando usuario
 authRouter.post("/register", validateUserData, createUser);
-/* authRouter.post('/registerWithImage',validateUserData,upload.array('image',1),createUserWithImage) */
+//TODO: hacer validacion para esta ruta
+authRouter.post('/registerWithImage',uploadFiles.single('image'),createUserWithImage)
+
 //logueando usuario
 authRouter.post("/login", loginValidation, loginUser);
 
