@@ -2,6 +2,8 @@ import { Prisma, PrismaClient } from "@prisma/client";
 import { toUserModel } from "../models/user.js";
 import { encrypt,compare } from "../helpers/handleBcrypt.js";
 import { creatingTokenJwt } from "../helpers/handlerJwt.js";
+import { insertProfesor } from "../services/profesor.js"
+import { insertStudent } from "./student.js";
 const prisma = new PrismaClient();
 
 const createUser = async (objectUserData) => {
@@ -25,6 +27,15 @@ const createUser = async (objectUserData) => {
     userCreated.session_token = `JWT ${creatingTokenJwt(userCreated.id_user,userCreated.email)}`;
     //agregando valores a la tabla user_has_roles
     await userHasRolesInsert(userCreated.id_user,id_rol);
+    if(id_rol === 1)
+      {
+        await insertStudent(userCreated.id_user)
+      }
+    else if(id_rol === 2) //TODO: hacerlo dinamico
+      {
+        console.log('object');
+        await insertProfesor(userCreated.id_user)
+      }
     return { success: true, data: {...userCreated,id_rol}}; 
   } catch (error) {
     if(error instanceof Prisma.PrismaClientValidationError)
@@ -40,7 +51,6 @@ const createUser = async (objectUserData) => {
 
 const loginUser = async (objectUserData) => 
 {
-  console.log(objectUserData);
   const {email,password} = objectUserData;
   //p2025
   try {
@@ -59,11 +69,11 @@ const loginUser = async (objectUserData) =>
     //creando variables donde guardar la informacion para el token
     const token = creatingTokenJwt(user.id_user,user.email);
     //guardando informacion para almacenar en el localStorage del usuario
+    const userRol = await userHasRolesGet(user.id_user);
     const userDataToReturn = {...user,
       session_token : `JWT ${token}`,
-      id_rol: await userHasRolesGet(user.id_user)
+      id_rol: userRol
     };
-  
     return {success: true,data: userDataToReturn};
     
   } catch (error) {
@@ -108,15 +118,22 @@ const userHasRolesInsert = async (userID,rolID,) =>
 const userHasRolesGet = (userId)  => 
   {
     try {
-      return prisma.user_has_roles.findUniqueOrThrow(
+      return prisma.user_has_roles.findFirst(
         {
-          where: {id_user : userId},
-          select: {
+          where: {
+            id_user: userId
+          },
+          select: 
+          {
             id_rol: true
           }
         })
     } catch (error) {
-      console.log(error);
+      if(error instanceof Prisma.PrismaClientKnownRequestError)
+        {
+          return {success: false,errorCode: error.code};
+        }
+        console.log(error);
     }
   }
 
