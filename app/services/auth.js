@@ -7,21 +7,27 @@ import { insertStudent } from "./student.js";
 const prisma = new PrismaClient();
 
 const createUser = async (objectUserData) => {
-  const { password: passwordToHash, id_rol } = objectUserData;
+  const {password: passwordToHash,id_rol,id_courses} = objectUserData;
+  //Eliminando datos innecesarios
   delete objectUserData.confirmPassword;
   delete objectUserData.id_rol;
+  delete objectUserData.id_courses;
+  delete objectUserData.id_teacher;
+
   //encriptando password
   const passwordHashed = await encrypt(passwordToHash);
   objectUserData.password = passwordHashed;
+
   //transformando en la clase userModel
   objectUserData = toUserModel(objectUserData);
+
+  //TODO: Crear una clase que tenga los permisos por default de cada una de las personas dentro del sistema
+  //Valores por defecto
+  objectUserData.status = 'A';
+  objectUserData.id_permisos = 1;
+
   try {
-    //A I
-    objectUserData.status = "A";
-    //TODO: Crear una clase que tenga los permisos por default de cada una de las personas dentro del sistema
-    objectUserData.id_permisos = 1;
     //creando usuario y generando mensaje de error o exito
-    console.log(objectUserData);
     const userCreated = await prisma.user.create({ data: objectUserData });
     //creando la session una vez registrado el usuario
     userCreated.session_token = `JWT ${creatingTokenJwt(
@@ -29,15 +35,20 @@ const createUser = async (objectUserData) => {
       userCreated.email
     )}`;
     //agregando valores a la tabla user_has_roles
-    await userHasRolesInsert(userCreated.id_user, id_rol);
-    if (id_rol === 1) {
-      await insertStudent(userCreated.id_user);
-    } else if (id_rol === 2) {
-      //TODO: hacerlo dinamico
-      console.log("object");
-      await insertProfesor(userCreated.id_user);
-    }
-    return { success: true, data: { ...userCreated, id_rol } };
+    await userHasRolesInsert(userCreated.id_user,id_rol);
+
+    //insertar en la tabla estudiante o profesor dependiendo del rol
+    if(id_rol === 1)
+      {
+        console.log(id_courses);
+        await insertStudent(userCreated.id_user,id_courses);
+      }
+    else if(id_rol === 2) //TODO: hacerlo dinamico
+      {
+        await insertProfesor(userCreated.id_user)
+      }
+
+    return { success: true, data: {...userCreated,id_rol}}; 
   } catch (error) {
     if (error instanceof Prisma.PrismaClientValidationError) {
       return {
@@ -127,7 +138,6 @@ const loginUser = async (objectUserData) => {
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
       return { success: false, errorCode: error.code };
     }
-    console.log(error);
   }
 };
  */

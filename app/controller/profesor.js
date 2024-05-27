@@ -6,7 +6,6 @@ const getProfesors = async (req,res,next) =>
             const registeredProfesors = await profesorService.getProfesors();
             if(registeredProfesors.success)
                 {
-                    console.log(registeredProfesors);
                     res.status(201).send({message: 'Profesores obtenidos con exito',success: true,data: registeredProfesors});
                 }else {
                     const errorManagement = prismaHandledErrors(createUserResult.errorCode, createUserResult.informacionAdicional);

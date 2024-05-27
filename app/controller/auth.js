@@ -27,7 +27,7 @@ const createUser = async (req, res, next) => {
 const createUserWithImage = async (req, res, next) => {
   try {
     // const user = req.body
-    const user = JSON.parse(req.body.user);
+    const user = JSON.parse(req.body.user); 
     //como no recibi un file se hace con base64
     const image = req.body.image;
     // const file = req.file

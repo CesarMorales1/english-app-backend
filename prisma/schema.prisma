@@ -31,7 +31,7 @@ model students {
 
 model teachers {
   id_teacher      Int               @id(map: "id_teacher_pk") @default(autoincrement())
-  id_user         Int
+  id_user         Int            
   user            user              @relation(fields: [id_user], references: [id_user], map: "id_user_fk")
   teachers_course teachers_course[]
 

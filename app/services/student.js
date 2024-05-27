@@ -1,13 +1,14 @@
 import { Prisma, PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
-const insertStudent = async (idUser)  => 
+const insertStudent = async (idUser,idCourse)  => 
     {
         try {
-            await prisma.students.create(
+            const idStudent = await prisma.students.create(
                 {
                     data: {id_user: idUser}
                 })
+            insertUserHasCourse(idStudent,idCourse);
         } catch (error) {
             if(error instanceof Prisma.PrismaClientKnownRequestError)
                 {
@@ -15,6 +16,25 @@ const insertStudent = async (idUser)  =>
                 }
         }
     }
+
+const insertUserHasCourse = async (idStudent,idCourse) =>
+{
+    try {
+        await prisma.user_has_course.create(
+            {
+                data: 
+                {
+                    id_course: idCourse,
+                    id_student: idStudent,
+                }
+            })
+    } catch (error) {
+        if(error instanceof Prisma.PrismaClientKnownRequestError)
+            {
+                return {succes: false, errorCode: error.code};
+            }
+    }
+}
 
 export {
     insertStudent,
