@@ -37,6 +37,7 @@ const createUser = async (objectUserData) => {
     //insertar en la tabla estudiante o profesor dependiendo del rol
     if(id_rol === 1)
       {
+        console.log(id_courses);
         await insertStudent(userCreated.id_user,id_courses);
       }
     else if(id_rol === 2) //TODO: hacerlo dinamico
