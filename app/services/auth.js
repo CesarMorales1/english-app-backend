@@ -90,7 +90,6 @@ const loginUser = async (objectUserData) =>
     {
       return {success: false,errorCode: error.code};
     }
-    console.log(error);
   }
 }
 

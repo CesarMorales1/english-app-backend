@@ -11,7 +11,7 @@ const createUser = async (req, res, next) => {
       res.status(201).send({ message: "User created successfully.", success: true });
     } else {
       const errorManagement = prismaHandledErrors(createUserResult.errorCode, createUserResult.informacionAdicional);
-      res.status(errorManagement.status).send(errorManagement.respuesta);
+      res.status(errorManagement.status).send(errorManagement.respuesta.message);
     }
   } catch (error) {
     console.error(error);
@@ -23,7 +23,6 @@ const createUserWithImage = async (req, res, next) => {
   try {
     // const user = req.body
     const user = JSON.parse(req.body.user); 
-    console.log(user);
     //como no recibi un file se hace con base64
     const image = req.body.image;
     // const file = req.file
@@ -42,7 +41,7 @@ const createUserWithImage = async (req, res, next) => {
       res.status(201).send({ message: "User created successfully.", success: true, data: createUserResult.data });
     } else {
       const errorManagement = prismaHandledErrors(createUserResult.errorCode, createUserResult.informacionAdicional);
-      res.status(errorManagement.status).send(errorManagement.respuesta);
+      res.status(errorManagement.status).send(errorManagement.respuesta.message);
     }
   } catch (error) {
     console.error(error);
@@ -60,7 +59,7 @@ const loginUser = async (req, res, next) => {
         return res.status(loginResult.errorCode).send({ message: loginResult.message, success: false });
       }
       const errorManagement = prismaHandledErrors(loginResult.errorCode);
-      res.status(errorManagement.status).send({ message: errorManagement.respuesta, success: false });
+      res.status(errorManagement.status).send({ message: errorManagement.respuesta.message, success: false });
     }
   } catch (error) {
     res.status(500).send({ message: error.message, success: false });
