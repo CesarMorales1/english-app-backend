@@ -16,7 +16,7 @@ const createUser = async (req, res, next) => {
         createUserResult.errorCode,
         createUserResult.informacionAdicional
       );
-      res.status(errorManagement.status).send(errorManagement.respuesta);
+      res.status(errorManagement.status).send(errorManagement.respuesta.message);
     }
   } catch (error) {
     console.error(error);
@@ -105,7 +105,7 @@ const loginUser = async (req, res, next) => {
       }
       const errorManagement = prismaHandledErrors(loginResult.errorCode);
       res.status(errorManagement.status).send({
-        message: errorManagement.respuesta,
+        message: errorManagement.respuesta.message,
         success: false,
       });
     }

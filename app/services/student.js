@@ -8,8 +8,27 @@ const insertStudent = async (idUser,idCourse)  =>
                 {
                     data: {id_user: idUser}
                 })
-            insertUserHasCourse(idStudent,idCourse);
+            insertUserHasCourse(idStudent.id_student,idCourse);
         } catch (error) {
+            if(error instanceof Prisma.PrismaClientKnownRequestError)
+                {
+                    return {succes: false, errorCode: error.code};
+                }
+        }
+    }
+
+const getStudent = (idUser) => 
+    {
+        try {
+            return  prisma.students.findFirstOrThrow(
+                {
+                    where: {id_user: idUser},
+                    select: {id_student: true
+                        ,user_has_course: true}
+                });
+                
+        } catch (error) {
+            console.log(error);
             if(error instanceof Prisma.PrismaClientKnownRequestError)
                 {
                     return {succes: false, errorCode: error.code};
@@ -29,6 +48,7 @@ const insertUserHasCourse = async (idStudent,idCourse) =>
                 }
             })
     } catch (error) {
+        console.log(error);
         if(error instanceof Prisma.PrismaClientKnownRequestError)
             {
                 return {succes: false, errorCode: error.code};
@@ -38,4 +58,5 @@ const insertUserHasCourse = async (idStudent,idCourse) =>
 
 export {
     insertStudent,
+    getStudent
 }
