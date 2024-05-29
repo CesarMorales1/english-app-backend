@@ -112,8 +112,6 @@ model comments {
   id_video                           Int
   user                               user     @relation(fields: [id_user], references: [id_user], onDelete: NoAction, onUpdate: NoAction, map: "id_user_fk")
   videos_comments_id_videoTovideos   videos   @relation("comments_id_videoTovideos", fields: [id_video], references: [id_video], onDelete: NoAction, onUpdate: NoAction, map: "id_video")
-  videos_videos_id_commentTocomments videos[] @relation("videos_id_commentTocomments")
-
   @@schema("Videos")
 }
 
@@ -122,9 +120,8 @@ model videos {
   titulo                               String     @db.VarChar(30)
   id_course                            Int
   url                                  String     @db.VarChar(1000)
-  id_comment                           Int
+  duration_video                       String     @default("1:00")
   comments_comments_id_videoTovideos   comments[] @relation("comments_id_videoTovideos")
-  comments_videos_id_commentTocomments comments   @relation("videos_id_commentTocomments", fields: [id_comment], references: [id_comment], map: "id_comment_fk")
   course                               course     @relation(fields: [id_course], references: [id_course], map: "id_course_fk")
 
   @@schema("Videos")

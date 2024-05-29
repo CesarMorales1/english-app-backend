@@ -48,7 +48,10 @@ const createUser = async (objectUserData) => {
         await insertProfesor(userCreated.id_user)
       }
 
-    return { success: true, data: {...userCreated,id_rol}}; 
+    const{ id_student: idStudent } = await getStudent(userCreated.id_user);
+    const {id_course: idCourse} = await getCourseStudent(idStudent);
+    console.log(idStudent,idCourse);
+    return { success: true, data: {...userCreated,id_rol,idCourse}}; 
   } catch (error) {
     if (error instanceof Prisma.PrismaClientValidationError) {
       return {
