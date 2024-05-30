@@ -3,12 +3,11 @@ import { toUserModel } from "../models/user.js";
 import { encrypt, compare } from "../helpers/handleBcrypt.js";
 import { creatingTokenJwt } from "../helpers/handlerJwt.js";
 import { insertProfesor } from "../services/profesor.js";
-import { getStudent, insertStudent } from "./student.js";
-import { getCourseStudent } from "./course.js";
+import { insertStudent } from "./student.js";
 const prisma = new PrismaClient();
 
 const createUser = async (objectUserData) => {
-  const {password: passwordToHash,id_rol,id_courses} = objectUserData;
+  const { password: passwordToHash, id_rol, id_courses } = objectUserData;
   //Eliminando datos innecesarios
   delete objectUserData.confirmPassword;
   delete objectUserData.id_rol;
@@ -24,7 +23,7 @@ const createUser = async (objectUserData) => {
 
   //TODO: Crear una clase que tenga los permisos por default de cada una de las personas dentro del sistema
   //Valores por defecto
-  objectUserData.status = 'A';
+  objectUserData.status = "A";
   objectUserData.id_permisos = 1;
 
   try {
@@ -36,19 +35,18 @@ const createUser = async (objectUserData) => {
       userCreated.email
     )}`;
     //agregando valores a la tabla user_has_roles
-    await userHasRolesInsert(userCreated.id_user,id_rol);
+    await userHasRolesInsert(userCreated.id_user, id_rol);
 
     //insertar en la tabla estudiante o profesor dependiendo del rol
-    if(id_rol === 1)
-      {
-        await insertStudent(userCreated.id_user,id_courses);
-      }
-    else if(id_rol === 2) //TODO: hacerlo dinamico
-      {
-        await insertProfesor(userCreated.id_user)
-      }
+    if (id_rol === 1) {
+      console.log(id_courses);
+      await insertStudent(userCreated.id_user, id_courses);
+    } else if (id_rol === 2) {
+      //TODO: hacerlo dinamico
+      await insertProfesor(userCreated.id_user);
+    }
 
-    return { success: true, data: {...userCreated,id_rol}}; 
+    return { success: true, data: { ...userCreated, id_rol } };
   } catch (error) {
     if (error instanceof Prisma.PrismaClientValidationError) {
       return {
@@ -89,17 +87,11 @@ const loginUser = async (objectUserData) => {
       };
     const token = creatingTokenJwt(user.id_user, user.email);
     const userRol = await userHasRolesGet(user.id_user);
-    const{ id_student: idStudent } = await getStudent(user.id_user);
-    const {id_course: idCourse} = await getCourseStudent(idStudent);
-  
     const userDataToReturn = {
       ...user,
-      id_student: idStudent,
-      id_course: idCourse,
       session_token: `JWT ${token}`,
       id_rol: userRol.id_rol, // Asegurarnos de devolver id_rol correctamente
     };
-    console.log(userDataToReturn);
     return { success: true, data: userDataToReturn };
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
