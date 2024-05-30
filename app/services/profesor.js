@@ -42,13 +42,32 @@ const getProfesors = async () =>
         }
     }
 
+const getProfesor = async (idUser) => 
+    {
+        try {
+            const idProfesor = await prisma.teachers.findFirstOrThrow(
+                {
+                    where: {id_user: Number(idUser)},
+                    select: {id_teacher: true}
+                })
+            return {succes: true, data: idProfesor};
+        } catch (error) {
+            console.log(error);
+            if(error instanceof Prisma.PrismaClientKnownRequestError)
+            {
+                return {succes: false, errorCode: error.code};
+            }
+        }
+    }
+
 const insertProfesor = async (idUser) => 
     {
         try {
-            await prisma.teachers.create(
+            const result = await prisma.teachers.create(
                 {
                     data: {id_user: idUser}
                 })
+            return result
         } catch (error) {
             if(error instanceof Prisma.PrismaClientKnownRequestError)
                 {
@@ -61,4 +80,5 @@ export
 {
  getProfesors,
  insertProfesor,
+ getProfesor,
 }

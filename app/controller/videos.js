@@ -1,5 +1,6 @@
 import * as videoServices from "../services/video.js";
 import {prismaHandledErrors} from "../models/errorDatabaseClass.js"
+import { getProfesor } from "../services/profesor.js";
 const getVideos = async (req,res,next) => 
     {
         try {
@@ -22,7 +23,32 @@ const getVideos = async (req,res,next) =>
         }
     }
 
+    const getAllVideos = async (req, res, next) => {
+        try {
+            const { id: idUser } = req.params;
+            const { id_teacher } = await getProfesor(idUser);
+            let profesorCourses = await videoServices.getAllvideosTeacher(id_teacher);
+    
+            const courseVideosPromises = profesorCourses.map(async (course) => {
+                const { data } = await videoServices.getVideos(course.course.id_course);
+                return data; // Devolvemos los datos de los videos
+            });
+    
+            // Esperamos a que todas las promesas se resuelvan
+            const allCourseVideos = await Promise.all(courseVideosPromises);
+    
+            // Aplanamos el array si es necesario (si deseas tener un array plano de videos)
+            const flattenedVideos = allCourseVideos.flat();
+            return res.status(200).send({ success: true, data: flattenedVideos });
+        } catch (error) {
+            console.error(error);
+            res.status(500).send({ message: error.message, success: false });
+        }
+    };
+    
+
 export 
 {
     getVideos,
+    getAllVideos
 }
