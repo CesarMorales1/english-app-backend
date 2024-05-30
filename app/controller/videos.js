@@ -4,6 +4,7 @@ const getVideos = async (req,res,next) =>
     {
         try {
             const {id:idCourse} = req.params;
+            console.log('aqui' + idCourse);
             const getVideosResult = await videoServices.getVideos(Number(idCourse));
             console.log(getVideosResult.data);
             if(getVideosResult.success)
