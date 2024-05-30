@@ -5,7 +5,7 @@ const getVideos = async (req,res,next) =>
         try {
             const {id:idCourse} = req.params;
             const getVideosResult = await videoServices.getVideos(Number(idCourse));
-            console.log(getVideosResult.success);
+            console.log(getVideosResult.data);
             if(getVideosResult.success)
                 {
                     return res.status(201).send({success: true,data:getVideosResult.data})

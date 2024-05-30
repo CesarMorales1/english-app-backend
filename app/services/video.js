@@ -10,7 +10,8 @@ const getVideos = async (idCourse) =>
                     select: {id_video: true,
                         url: true,
                         duration_video: true,
-                        titulo: true
+                        titulo: true,
+                        detail_video: true
                     }
                 });
             return {success: true,data: videos};

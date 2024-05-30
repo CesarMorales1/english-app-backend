@@ -121,6 +121,7 @@ model videos {
   id_course                            Int
   url                                  String     @db.VarChar(1000)
   duration_video                       String     @default("1:00")
+  detail_video                         String     @default("Video explicativo del tema tal")
   comments_comments_id_videoTovideos   comments[] @relation("comments_id_videoTovideos")
   course                               course     @relation(fields: [id_course], references: [id_course], map: "id_course_fk")
 
