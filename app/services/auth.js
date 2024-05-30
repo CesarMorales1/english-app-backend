@@ -42,12 +42,11 @@ const createUser = async (objectUserData) => {
 
     //insertar en la tabla estudiante o profesor dependiendo del rol
     if (id_rol === 1) {
-      console.log(id_courses);
       await insertStudent(userCreated.id_user, id_courses);
     } else if (id_rol === 2) {
       //TODO: hacerlo dinamico
-      await insertProfesor(userCreated.id_user);
-      return {success: true, data: {...userCreated,id_rol,idCourse}}
+      const {id_teacher} = await insertProfesor(userCreated.id_user);
+      return {success: true, data: {...userCreated,id_rol,id_teacher}}
     }
     const{ id_student: idStudent } = await getStudent(userCreated.id_user);
     const {id_course: idCourse} = await getCourseStudent(idStudent);
@@ -93,6 +92,16 @@ const loginUser = async (objectUserData) => {
       };
     const token = creatingTokenJwt(user.id_user, user.email);
     const userRol = await userHasRolesGet(user.id_user);
+    if(Number(userRol.id_rol) === 2)
+      {
+        const userDataToReturn = 
+        {
+          ...user,
+          session_token: `JWT ${token}`,
+          id_rol: userRol.id_rol
+        }
+        return {success: true,data: userDataToReturn}
+      }
     const{ id_student: idStudent } = await getStudent(user.id_user);
     const {id_course: idCourse} = await getCourseStudent(idStudent);
     const userDataToReturn = {
