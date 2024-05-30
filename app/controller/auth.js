@@ -41,6 +41,7 @@ const createUserWithImage = async (req, res, next) => {
         user.image = url;
       }
     }
+    console.log('object');
     const createUserResult = await authServices.createUser(user);
     if (createUserResult.success) {
       res.status(201).send({

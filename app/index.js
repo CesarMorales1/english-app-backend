@@ -13,9 +13,9 @@ app.use(express.json());
 app.use(express.urlencoded({extended: true}))
 app.use(`/${process.env.ROUTE_VERSION}/`, routesToUse);
 app.use(cors());
-// app.use(passport.initialize());
-// app.use(passport.session());
-// passportStrategy(passport);
+app.use(passport.initialize());
+app.use(passport.session());
+passportStrategy(passport);
 app.use(express.urlencoded({ extended: true }));
 
 //evitando la filtracion de informacion acerca del servidor web

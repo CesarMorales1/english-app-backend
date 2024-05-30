@@ -4,6 +4,9 @@ import { encrypt, compare } from "../helpers/handleBcrypt.js";
 import { creatingTokenJwt } from "../helpers/handlerJwt.js";
 import { insertProfesor } from "../services/profesor.js";
 import { insertStudent } from "./student.js";
+import { getCourseStudent } from "./course.js";
+import { getStudent } from "./student.js";
+
 const prisma = new PrismaClient();
 
 const createUser = async (objectUserData) => {
@@ -44,9 +47,12 @@ const createUser = async (objectUserData) => {
     } else if (id_rol === 2) {
       //TODO: hacerlo dinamico
       await insertProfesor(userCreated.id_user);
+      return {success: true, data: {...userCreated,id_rol,idCourse}}
     }
-
-    return { success: true, data: { ...userCreated, id_rol } };
+    const{ id_student: idStudent } = await getStudent(userCreated.id_user);
+    const {id_course: idCourse} = await getCourseStudent(idStudent);
+    // console.log(idStudent,idCourse);
+    return { success: true, data: {...userCreated,id_rol,idCourse}}; 
   } catch (error) {
     if (error instanceof Prisma.PrismaClientValidationError) {
       return {
@@ -87,9 +93,13 @@ const loginUser = async (objectUserData) => {
       };
     const token = creatingTokenJwt(user.id_user, user.email);
     const userRol = await userHasRolesGet(user.id_user);
+    const{ id_student: idStudent } = await getStudent(user.id_user);
+    const {id_course: idCourse} = await getCourseStudent(idStudent);
     const userDataToReturn = {
       ...user,
       session_token: `JWT ${token}`,
+      id_student: idStudent,
+      idCourse: idCourse,
       id_rol: userRol.id_rol, // Asegurarnos de devolver id_rol correctamente
     };
     return { success: true, data: userDataToReturn };
