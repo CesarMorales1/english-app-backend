@@ -26,9 +26,12 @@ const getVideos = async (req,res,next) =>
     const getAllVideos = async (req, res, next) => {
         try {
             const { id: idUser } = req.params;
-            const { id_teacher } = await getProfesor(idUser);
-            let profesorCourses = await videoServices.getAllvideosTeacher(id_teacher);
-    
+            const { data } = await getProfesor(idUser)
+            let profesorCourses = await videoServices.getAllvideosTeacher(data.id_teacher);
+            if(profesorCourses.length === 0)
+                {
+                    return res.status(200).send({success:true,data: []})
+                }
             const courseVideosPromises = profesorCourses.map(async (course) => {
                 const { data } = await videoServices.getVideos(course.course.id_course);
                 return data; // Devolvemos los datos de los videos

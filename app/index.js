@@ -4,19 +4,23 @@ import routesToUse from "../app/routes/index.js";
 import morgan from "morgan";
 import passport from "passport"; 
 import passportStrategy from "./helpers/handlerJwtPassport.js";
+import bodyParser from "body-parser";
 const app = express();
+
 //TODO: como estamos en local buscamos el puerto que se encuentra libre para el despliegue de la aplicacion
 const {PORT = 0} = process.env;
 
 app.use(morgan("dev"));
 app.use(express.json());
+// app.use(bodyParser.json({limit: '300mb'}));
+// app.use(bodyParser.urlencoded({limit: '300mb', extended: true}))
 app.use(express.urlencoded({extended: true}))
 app.use(`/${process.env.ROUTE_VERSION}/`, routesToUse);
 app.use(cors());
-app.use(passport.initialize());
-app.use(passport.session());
-passportStrategy(passport);
-app.use(express.urlencoded({ extended: true }));
+// app.use(passport.initialize());
+// app.use(passport.session());
+// passportStrategy(passport);
+// app.use(express.urlencoded({ extended: true }));
 
 //evitando la filtracion de informacion acerca del servidor web
 app.disable("x-powered-by");

@@ -40,7 +40,22 @@ const getAllvideosTeacher = async (idTeacher) => {
     return teacherCourses;
 };
 
+const createVideoTeacher = async () => 
+    {
+        const video = await prisma.videos.create(
+            {
+                data: {titulo: 'Class 1',course: 1,duration_video: '0:13',detail_video: 'video 1',url: 'https://firebasestorage.googleapis.com/v0/b/english-plis.appspot.com/o/dec83f97-131a-459d-b725-c10732366533-VideoProyecto.mp4?alt=media&token=2fed9fe6-140a-4659-99dc-42596384ba37'},  
+                select: {id_video: true}     
+            })
+        await prisma.teachers_course.create(
+            {
+            data: {id_teacher: 1,id_course:1,}
+            })
+        return {success: true, data: video}
+    }
+
 export {
     getVideos,
-    getAllvideosTeacher
+    getAllvideosTeacher,
+    createVideoTeacher
 };
